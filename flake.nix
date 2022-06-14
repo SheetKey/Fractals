@@ -1,5 +1,5 @@
 {
-  description = "A Haskell project template.";
+  description = "A command line tool to generate fractals from an IFS.";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs";
@@ -13,7 +13,7 @@
 
         haskellPackages = pkgs.haskellPackages;
 
-        packageName = "Generic";
+        packageName = "Fractals";
 
         jailbreakUnbreak = pkg:
           pkgs.haskell.lib.doJailbreak (pkg.overrideAttrs (_: { meta = { }; }));
