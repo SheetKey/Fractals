@@ -1,4 +1,16 @@
 cradle:
   cabal:
     - path: "app/Main.hs"
-      component: "Fractals:exe:Generic"
+      component: "Fractals:exe:Fractals"
+
+    - path: "app/Solver.hs"
+      component: "Fractals:exe:Fractals"
+
+    - path: "app/Fractal.hs"
+      component: "Fractals:exe:Fractals"
+
+    - path: "app/Graph.hs"
+      component: "Fractals:exe:Fractals"
+
+    - path: "app/Coefficients.hs"
+      component: "Fractals:exe:Fractals"

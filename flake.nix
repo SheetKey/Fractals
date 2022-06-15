@@ -33,10 +33,30 @@
 
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
+            cabal2nix
+            
             ghc
             cabal-install
             haskell-language-server
             haskellPackages.implicit-hie
+            # For StateT
+            haskellPackages.transformers_0_6_0_4
+            # Random library
+            haskellPackages.random
+            # For nunOrd
+            haskellPackages.extra
+            # Stuff for plotting
+            haskellPackages.Chart
+            haskellPackages.Chart-cairo
+            haskellPackages.gtk2hs-buildtools
+            haskellPackages.gtk
+            haskellPackages.colour
+            haskellPackages.data-default-class
+            haskellPackages.lens
+            pkg-config
+            cairo
+            pango
+            gtk2
           ];
           inputsFrom = builtins.attrValues self.packages.${system};
         };
