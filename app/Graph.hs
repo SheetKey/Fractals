@@ -4,16 +4,30 @@ module Graph
   ) where
 
 import Graphics.Rendering.Chart.Easy
-import Graphics.Rendering.Chart.Backend.Cairo
+    ( filledCircles,
+      layout_plots,
+      layout_title,
+      plot_points_style,
+      plot_points_title,
+      plot_points_values,
+      opaque,
+      red,
+      (.~),
+      ToPlot(toPlot),
+      PickFn,
+      Renderable,
+      ToRenderable(toRenderable),
+      Default(def) )
+import Graphics.Rendering.Chart.Backend.Cairo ( renderableToFile )
 
-import Data.Colour
-import Data.Colour.Names
-import Data.Default.Class
-import Control.Lens
+import Data.Colour ()
+import Data.Colour.Names ()
+import Data.Default.Class ()
+import Control.Lens ()
 
-import Solver
-import Fractal
-import Coefficients
+import Solver ()
+import Fractal ( generateFractal )
+import Coefficients ( Coefficients, Points, rotScale, scaleRot )
 
 import System.IO (hFlush, stdout, IOMode (AppendMode))
 import System.Exit (exitSuccess)
@@ -35,7 +49,7 @@ makeGraph points title = toRenderable layout
     layout = layout_title .~ title
            $ layout_plots .~ [toPlot myPlot]
            $ def
-    
+
 -- Plots the fractal
 savePlot :: Points -> String -> String -> IO (PickFn ())
 savePlot points name title = renderableToFile def ("./" ++ name) (makeGraph points title)
@@ -53,7 +67,8 @@ validateInt = readMaybe
 rotScaleIO :: IO Coefficients
 rotScaleIO = do
   putStrLn "Enter a comma separated list of values: "
-  putStrLn "Angle for rotation, x translation, y translation, x offset, y offset"
+  putStrLn "Note: x and y scaling values must be between 0 and 1."
+  putStrLn "Angle for rotation (degrees), x scaling, y scaling, x offset, y offset"
   list <- myGetLine
   let nospace = filter (/= ' ') list
       splitList = splitOn "," nospace
@@ -64,6 +79,10 @@ rotScaleIO = do
     putStrLn "Invalid input"
     rotScaleIO
     else if length splitList == 5
+            && 0.0 <= read (splitList !! 1)
+            && 1.0 >= read (splitList !! 1)
+            && 0.0 <= read (splitList !! 2)
+            && 1.0 >= read (splitList !! 2)
          then return $ rotScale (read $ head splitList)
                                 (read $ splitList !! 1)
                                 (read $ splitList !! 2)
@@ -77,7 +96,8 @@ rotScaleIO = do
 scaleRotIO :: IO Coefficients
 scaleRotIO = do
   putStrLn "Enter a comma separated list of values: "
-  putStrLn "x translation, y translation, angle for rotation, x offset, y offset"
+  putStrLn "Note: x and y scaling values must be between 0 and 1."
+  putStrLn "x scaling, y scaling, angle for rotation (degrees), x offset, y offset"
   list <- myGetLine
   let nospace = filter (/= ' ') list
       splitList = splitOn "," nospace
@@ -88,6 +108,10 @@ scaleRotIO = do
     putStrLn "Invalid input"
     scaleRotIO
     else if length splitList == 5
+            && 0.0 <= read (head splitList)
+            && 1.0 >= read (head splitList)
+            && 0.0 <= read (splitList !! 1)
+            && 1.0 >= read (splitList !! 1)
          then return $ scaleRot (read $ head splitList)
                                 (read $ splitList !! 1)
                                 (read $ splitList !! 2)
@@ -122,7 +146,7 @@ mkCoeffs = do
       lst <- mkCoeffs
       return $ coeffs : lst
     else return [coeffs]
-  
+
 
 -- Gets coefficiets from the userError
 getCoeffs :: IO [Coefficients]
@@ -139,7 +163,7 @@ getCoeffs = do
                 putStrLn "Invalid input."
                 getCoeffs
               else evalStateT mkCoeffs a
-    
+
 
 howManyPoints :: IO Int
 howManyPoints = do
